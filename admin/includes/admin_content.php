@@ -10,14 +10,23 @@
 
                         <?php
 
-                            $result = User::findAllUsers();    // korzystanie z metody statycznej klasy User
+                            // $result = User::findAllUsers();    // korzystanie z metody statycznej klasy User
+                            //
+                            // while($row = mysqli_fetch_array($result)) {
+                            //     echo $row['username'] . "<br>";
+                            // }
 
-                            while($row = mysqli_fetch_array($result)) {
-                                echo $row['username'] . "<br>";
+                            // $foundUser = User::findUserById(2);    // korzystanie z metody statycznej klasy User
+                            //
+                            // $user = User::instantation($foundUser);
+                            //
+                            // echo $user->username;
+
+                            $users = User::findAllUsers();
+                            foreach ($users as $user) {
+                                echo $user->username . "  ";
                             }
 
-                            $foundUser = User::findUserById(2);    // korzystanie z metody statycznej klasy User
-                            echo $foundUser['username'];
                          ?>
 
                         <ol class="breadcrumb">
