@@ -21,8 +21,15 @@
 
             global $database;
 
-            $result = $database->query("SELECT * FROM users WHERE id = $id LIMIT 1");
-            $foundUser = mysqli_fetch_array($result);
+            $resultArray = self::findThisQuery("SELECT * FROM users WHERE id = $id LIMIT 1");
+
+            if(!empty($resultArray)) {
+                $firstItem = array_shift($resultArray);
+                return $firstItem;
+            }
+            else {
+                return false;
+            }
 
             return $foundUser;
         }
