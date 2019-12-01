@@ -2,12 +2,56 @@
 
     class Session {
 
-        private $signedIn;
+        private $signedIn = false;
         public $userId;
+        public $message;
 
         function __construct() {
 
             session_start();
+            $this->checkTheLogin();
+            $this->checkMessage();
+        }
+
+        public function message($msg="") {
+
+            if(!empty($msg)) {
+                $_SESSION['message'] = $msg;
+            }
+            else {
+                return $this->message;
+            }
+        }
+
+        public function checkMessage() {
+
+            if(isset($_SESSION['message'])) {
+                $this->message = $_SESSION['message'];
+                unset($_SESSION['message']);
+            }
+            else {
+                $this->message = "";
+            }
+        }
+
+        public function isSignedIn() {          // getter, sprawdza, czy user jest zalogowany
+
+            return $this->signedIn;
+        }
+
+        public function login($user) {
+
+            if($user) {
+                $this->userId = $_SESSION['user_id'] = $user->id;
+                $this->signedIn = true;
+            }
+        }
+
+        public function logout() {
+
+            unset($_SESSION['user_id']);
+            unset($this->userId);
+            $this->signedIn = false;
         }
 
         private function checkTheLogin() {

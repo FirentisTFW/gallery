@@ -47,6 +47,26 @@
             return $theObjectArray;
         }
 
+        public static function verifyUser($username, $password) {
+
+            global $database;
+
+            $username = $database->escapeString($username);      // sanityzacja
+            $password = $database->escapeString($password);
+
+            $sql = "SELECT * FROM users WHERE username = '{$username}' AND password = '{$password}' LIMIT 1";
+            $result = self::findThisQuery($sql);
+
+            if(!empty($result)) {               // nie ma takego usera
+                $firstItem = array_shift($result);
+                return $firstItem;
+            }
+            else {
+                return false;
+            }
+
+        }
+
         public static function instantation($theRecord) {
 
             $theObject = new self;              // tworzenie nowego obiektu klasy User (self - odwołujemy się do tej samej klasy, w której jest zdefiniowana metoda)

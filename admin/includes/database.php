@@ -38,7 +38,7 @@
 
         public function escapeString($string) {
 
-            $escapedString = $this->connection->real_escape_string($string);
+            $escapedString = $this->connection->real_escape_string($string);        // sanityzacja danych
             return $escapedString;
         }
 
