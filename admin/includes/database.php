@@ -42,6 +42,11 @@
             return $escapedString;
         }
 
+        // public function theInsertId() {
+        //
+        //     return mysqli_insert_id($this->connection);
+        // }
+
         public function theInsertId() {
 
             return $this->connection->insert_id;

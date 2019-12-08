@@ -10,25 +10,18 @@
 
                         <?php
 
-                            // $result = User::findAllUsers();    // korzystanie z metody statycznej klasy User
+                            // $user = new User();
                             //
-                            // while($row = mysqli_fetch_array($result)) {
-                            //     echo $row['username'] . "<br>";
-                            // }
-
-                            // $foundUser = User::findUserById(2);    // korzystanie z metody statycznej klasy User
+                            // $user->username = "Example2";
+                            // $user->password = "Pass2";
+                            // $user->first_name = "First2";
+                            // $user->last_name = "Last2";
                             //
-                            // $user = User::instantation($foundUser);
-                            //
-                            // echo $user->username;
+                            // $user->create();
 
-                            // $users = User::findAllUsers();
-                            // foreach ($users as $user) {
-                            //     echo $user->username . "  ";
-                            // }
+                            $user = User::findUserById(4);          // zwraca wiersz z tabeli users (zwraca jednego usera)
 
-                            $foundUser = User::findUserById(2);
-                            echo $foundUser->username;
+                            $user->delete();
 
                          ?>
 

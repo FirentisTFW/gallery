@@ -1,9 +1,21 @@
 <?php
 
     if(isset($_POST['submit'])) {
-        echo "<pre>";
-        print_r($_FILES['file_upload']);
-        echo "<pre>";
+        // echo "<pre>";
+        // print_r($_FILES['file_upload']);     // informacje o przesyłanym pliku
+        // echo "<pre>";
+
+        $tempName = $_FILES['file_upload']['tmp_name'];
+        $theFile = $_FILES['file_upload']['name'];
+        $directory = "uploads";
+
+        if(move_uploaded_file($tempName, $directory . "/" . $theFile)) {      // wbudowana funkcja php, zwraca true, jeśli przeniesienie pliku się powiedzie
+            echo "File uploaded successfully!";
+        }
+        else {
+            echo "Error! File not uploaded!";
+        }
+
     }
 
  ?>

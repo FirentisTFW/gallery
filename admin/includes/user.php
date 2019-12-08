@@ -93,6 +93,58 @@
             return array_key_exists($property, $objectProperties);      // kolejna gotowa funkcja - sprawdza czy $porperty znajduje się w $objectProperties
         }
 
+        public function create() {
+
+            global $database;
+            $sql = "INSERT INTO users VALUES (NULL, '{$database->escapeString($this->username)}', '{$database->escapeString($this->password)}',
+                '{$database->escapeString($this->first_name)}','{$database->escapeString($this->last_name)}')";           // użycie metody z klasy Database do operacji na danych z klasy User
+
+            if($database->query($sql)) {
+
+                $this->id = $database->theInsertId();
+
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
+
+        public function update() {
+
+            global $database;
+
+            $sql = "UPDATE users SET username = '{$database->escapeString($this->username)}', password = '{$database->escapeString($this->password)}',
+                first_name = '{$database->escapeString($this->first_name)}', last_name = '{$database->escapeString($this->last_name)}' WHERE id = {$database->escapeString($this->id)}";           // użycie metody z klasy Database do operacji na danych z klasy User
+
+            $database->query($sql);
+
+            if(mysqli_affected_rows($database->connection) == 1) {      // sorawdzamy, czy update zadziałał - czy zmieniono jeden wiersz w tabeli
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
+
+        public function delete() {
+
+            global $database;
+
+            $sql = "DELETE FROM users WHERE id = {$database->escapeString($this->id)} LIMIT 1";
+
+            $database->query($sql);
+
+            if(mysqli_affected_rows($database->connection) == 1) {      // sorawdzamy, czy update zadziałał - czy zmieniono (usunięto) jeden wiersz w tabeli
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
     }
 
 
