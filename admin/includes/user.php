@@ -2,6 +2,8 @@
 
     class User {
 
+        protected static $dbTable = "users";
+        protected static $dbTableFields = ['username', 'password', 'first_name', 'last_name'];
         public $id;
         public $username;
         public $password;
@@ -86,6 +88,19 @@
             return $theObject;
         }
 
+        protected function properties() {       // zwraca wszystkie atrybuty danego obiektu
+
+            $properties = array();
+
+            foreach (self::$dbTableFields as $db_field) {
+                if(property_exists($this, $db_field)) {         // obiekt ma atrybut o takiej nazwie jak wartość $db_field
+                    $properties[$db_field] = $this->$db_field;      // przed $db_field dajemy "$", bo nie jest to atrybut obiektu, tylko zwykła zmienna
+                 }
+            }
+
+            return $properties;
+        }
+
         private function hasProperty($property) {
 
             $objectProperties = get_object_vars($this);         // gotowa funkcja php - zwraca wszystkie atrybuty klasy
@@ -93,11 +108,24 @@
             return array_key_exists($property, $objectProperties);      // kolejna gotowa funkcja - sprawdza czy $porperty znajduje się w $objectProperties
         }
 
+        public function save() {
+
+            if(isset($this->id)) {          // user istnieje - update'ujemy go
+                $this->update();
+            }       // user nie istnieje - tworzymy go
+            else {
+                $this->create();
+            }
+        }
+
         public function create() {
 
             global $database;
-            $sql = "INSERT INTO users VALUES (NULL, '{$database->escapeString($this->username)}', '{$database->escapeString($this->password)}',
-                '{$database->escapeString($this->first_name)}','{$database->escapeString($this->last_name)}')";           // użycie metody z klasy Database do operacji na danych z klasy User
+
+            $properties = $this->properties();      // get object properties
+
+            // niżej - implode(array_keys()) - wstawia nazwy atrybutów obiektu (które są takie same jak w bazie danych), oddzielając je przecinkiem - jest to funkcja uniwersalna, która zadziała na różnycn obiektach
+            $sql = "INSERT INTO " . self::$dbTable . "(" .  implode(",", array_keys($properties))   .")" . " VALUES ('" . implode("', '", array_values($properties)) . "')";           // użycie metody z klasy Database do operacji na danych z klasy User
 
             if($database->query($sql)) {
 
@@ -115,7 +143,7 @@
 
             global $database;
 
-            $sql = "UPDATE users SET username = '{$database->escapeString($this->username)}', password = '{$database->escapeString($this->password)}',
+            $sql = "UPDATE " . self::$dbTable . " SET username = '{$database->escapeString($this->username)}', password = '{$database->escapeString($this->password)}',
                 first_name = '{$database->escapeString($this->first_name)}', last_name = '{$database->escapeString($this->last_name)}' WHERE id = {$database->escapeString($this->id)}";           // użycie metody z klasy Database do operacji na danych z klasy User
 
             $database->query($sql);
@@ -133,7 +161,7 @@
 
             global $database;
 
-            $sql = "DELETE FROM users WHERE id = {$database->escapeString($this->id)} LIMIT 1";
+            $sql = "DELETE FROM " . self::$dbTable . " WHERE id = {$database->escapeString($this->id)} LIMIT 1";
 
             $database->query($sql);
 

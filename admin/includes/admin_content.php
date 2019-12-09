@@ -10,19 +10,24 @@
 
                         <?php
 
+                            $user = new User();
+
+                            $user->username = "Example2";
+                            $user->password = "Pass2";
+                            $user->first_name = "First2";
+                            $user->last_name = "Last2";
+                            
+                            $user->create();
+
+                            // $user = User::findUserById(3);          // zwraca wiersz z tabeli users (zwraca jednego usera)
+                            // $user->username="ziomal1";
+                            // $user->update();
+                            // $user->username="Whatever";
+                            // $user->save();
+
                             // $user = new User();
-                            //
-                            // $user->username = "Example2";
-                            // $user->password = "Pass2";
-                            // $user->first_name = "First2";
-                            // $user->last_name = "Last2";
-                            //
-                            // $user->create();
-
-                            $user = User::findUserById(4);          // zwraca wiersz z tabeli users (zwraca jednego usera)
-
-                            $user->delete();
-
+                            // $user->username="Whatever12121";
+                            // $user->save();
                          ?>
 
                         <ol class="breadcrumb">
