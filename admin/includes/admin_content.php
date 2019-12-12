@@ -12,15 +12,15 @@
 
                             $user = new User();
 
-                            $user->username = "Example2";
-                            $user->password = "Pass2";
-                            $user->first_name = "First2";
-                            $user->last_name = "Last2";
-                            
+                            $user->username = "Student";
+                            $user->password = "somethingweird";
+                            $user->first_name = "Sol";
+                            $user->last_name = "Lalals";
+
                             $user->create();
 
                             // $user = User::findUserById(3);          // zwraca wiersz z tabeli users (zwraca jednego usera)
-                            // $user->username="ziomal1";
+                            // $user->password="hasloziomala";
                             // $user->update();
                             // $user->username="Whatever";
                             // $user->save();

@@ -101,6 +101,19 @@
             return $properties;
         }
 
+        protected function cleanProperties() {      // funkcja do "czyszczenia" tablicy przed przesłaniem jej do bazy
+
+            global $database;
+
+            $cleanProperties = [];
+
+            foreach ($this->properties() as $key => $value) {
+                $cleanProperties[$key] = $database->escapeString($value);
+            }
+
+            return $cleanProperties;
+        }
+
         private function hasProperty($property) {
 
             $objectProperties = get_object_vars($this);         // gotowa funkcja php - zwraca wszystkie atrybuty klasy
@@ -122,9 +135,9 @@
 
             global $database;
 
-            $properties = $this->properties();      // get object properties
+            $properties = $this->cleanProperties();      // get object properties
 
-            // niżej - implode(array_keys()) - wstawia nazwy atrybutów obiektu (które są takie same jak w bazie danych), oddzielając je przecinkiem - jest to funkcja uniwersalna, która zadziała na różnycn obiektach
+            // niżej - implode(array_keys()) - wstawia nazwy atrybutów obiektu (które są takie same jak w bazie danych), oddzielając je przecinkiem - jest to funkcja uniwersalna, która zadziała na różnych obiektach w różnych klasach
             $sql = "INSERT INTO " . self::$dbTable . "(" .  implode(",", array_keys($properties))   .")" . " VALUES ('" . implode("', '", array_values($properties)) . "')";           // użycie metody z klasy Database do operacji na danych z klasy User
 
             if($database->query($sql)) {
@@ -143,8 +156,15 @@
 
             global $database;
 
-            $sql = "UPDATE " . self::$dbTable . " SET username = '{$database->escapeString($this->username)}', password = '{$database->escapeString($this->password)}',
-                first_name = '{$database->escapeString($this->first_name)}', last_name = '{$database->escapeString($this->last_name)}' WHERE id = {$database->escapeString($this->id)}";           // użycie metody z klasy Database do operacji na danych z klasy User
+            $properties = $this->cleanProperties();      // get object properties
+
+            $propertiesPairs = [];
+
+            foreach ($properties as $key => $value) {
+                $propertiesPairs[] = "{$key}='{$value}'";
+            }
+
+            $sql = "UPDATE " . self::$dbTable . " SET " . implode(", ", $propertiesPairs) . " WHERE id = " . $database->escapeString($this->id);
 
             $database->query($sql);
 
