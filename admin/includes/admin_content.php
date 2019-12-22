@@ -10,14 +10,14 @@
 
                         <?php
 
-                            $user = new User();
-
-                            $user->username = "Student";
-                            $user->password = "somethingweird";
-                            $user->first_name = "Sol";
-                            $user->last_name = "Lalals";
-
-                            $user->create();
+                            // $user = new User();
+                            //
+                            // $user->username = "Student";
+                            // $user->password = "somethingweird";
+                            // $user->first_name = "Sol";
+                            // $user->last_name = "Lalals";
+                            //
+                            // $user->create();
 
                             // $user = User::findUserById(3);          // zwraca wiersz z tabeli users (zwraca jednego usera)
                             // $user->password="hasloziomala";
@@ -28,6 +28,12 @@
                             // $user = new User();
                             // $user->username="Whatever12121";
                             // $user->save();
+
+                            $users = User::findAll();
+
+                            foreach ($users as $user) {
+                                echo $user->username;
+                            }
                          ?>
 
                         <ol class="breadcrumb">
