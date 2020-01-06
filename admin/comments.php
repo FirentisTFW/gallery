@@ -1,4 +1,13 @@
 <?php include("includes/header.php"); ?>
+<?php
+    if(!$session->isSignedIn()) {       // comment nie jest zalogowany - wyślij go do innej strony
+        redirect("login.php");
+    }
+ ?>
+
+ <?php
+    $comments = Comment::findAll();         // znajdź wszystkich użytkowników
+?>
 
         <!-- Navigation -->
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -22,16 +31,41 @@
                     <div class="col-lg-12">
                         <h1 class="page-header">
                             Comments
-                            <small>Subheading</small>
                         </h1>
-                        <ol class="breadcrumb">
-                            <li>
-                                <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
-                            </li>
-                            <li class="active">
-                                <i class="fa fa-file"></i> Blank Page
-                            </li>
-                        </ol>
+
+                        <div class="col-md-12">
+
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Photo Id</th>
+                                        <th>Author</th>
+                                        <th>Body</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($comments as $comment) {   ?>
+
+                                    <tr>
+                                        <td>
+                                            <?php echo $comment->id; ?>
+                                            <div class="action_link">
+                                                <a href="delete_comment.php?id=<?php echo $comment->id ?>">Delete</a>
+                                                <a href="edit_comment.php?id=<?php echo $comment->id ?>">Edit</a>
+                                            </div>
+                                        </td>
+                                        <td><?php echo $comment->photo_id ?></td>
+                                        <td><?php echo $comment->author; ?></td>
+                                        <td><?php echo $comment->body; ?></td>
+                                    </tr>
+
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+
+                        </div>
+
                     </div>
                 </div>
                 <!-- /.row -->

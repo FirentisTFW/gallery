@@ -1,11 +1,9 @@
 <?php include("includes/header.php"); ?>
 
 <?php
-
     if(!$session->isSignedIn()) {       // user nie jest zalogowany - wyślij go do innej strony
         redirect("login.php");
     }
-
  ?>
 
         <!-- Navigation -->

@@ -1,6 +1,6 @@
 <?php
 
-    require_once("new_config.php");
+    // require_once "admin/includes/new_config.php";
 
     class Database {
 

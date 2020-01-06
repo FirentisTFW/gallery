@@ -3,12 +3,16 @@
     class User extends DbObject {
 
         protected static $dbTable = "users";
-        protected static $dbTableFields = ['username', 'password', 'first_name', 'last_name'];
+        protected static $dbTableFields = ['username', 'password', 'first_name', 'last_name', 'user_image'];
         public $id;
         public $username;
         public $password;
         public $first_name;
         public $last_name;
+        public $user_image;
+        public $uploadDirectory = "images";
+        public $imagePlaceholder = "http://placehold.it/400x400&text=image";
+        public $errors = [];      // nasze errory - podczas przesyłania plików itp.
 
 
         public static function verifyUser($username, $password) {
@@ -19,7 +23,7 @@
             $password = $database->escapeString($password);
 
             $sql = "SELECT * FROM " . self::$dbTable . " WHERE username = '{$username}' AND password = '{$password}' LIMIT 1";
-            $result = self::findThisQuery($sql);
+            $result = self::findByQuery($sql);
 
             if(!empty($result)) {               // nie ma takego usera
                 $firstItem = array_shift($result);
@@ -31,105 +35,63 @@
 
         }
 
-        protected function properties() {       // zwraca wszystkie atrybuty danego obiektu
+        public function imagePathAndPlaceholder() {
 
-            $properties = array();
-
-            foreach (self::$dbTableFields as $db_field) {
-                if(property_exists($this, $db_field)) {         // obiekt ma atrybut o takiej nazwie jak wartość $db_field
-                    $properties[$db_field] = $this->$db_field;      // przed $db_field dajemy "$", bo nie jest to atrybut obiektu, tylko zwykła zmienna
-                 }
-            }
-
-            return $properties;
+            return empty($this->user_image) ? $this->imagePlaceholder : $this->uploadDirectory . DS. $this->user_image;
         }
 
-        protected function cleanProperties() {      // funkcja do "czyszczenia" tablicy przed przesłaniem jej do bazy
+        public function setFile($file) {
 
-            global $database;
+            $_FILES = $_FILES['user_image'];       // mój dodatek - usunięcie zagnieżdżenia (podwójnej tabeli)
+            // print_r($_FILES);
 
-            $cleanProperties = [];
 
-            foreach ($this->properties() as $key => $value) {
-                $cleanProperties[$key] = $database->escapeString($value);
+            if(empty($file) || !$_FILES || !is_array($_FILES)) {        // sprawdzenie, czy plik się przesłał
+                $this->errore[] = "There was no fle uploaded here";
+                return false;
+            }
+            elseif($_FILES['error'] != 0) {                     // error checking c.d.
+                $this->errors[] = "Error!";
+                return false;
+            }
+            else {                          // wszystko ok, plik przesłany
+                $this->user_image = basename($_FILES['name']);
+                $this->tmp_path = $_FILES['tmp_name'];
+                $this->type = $_FILES['type'];
+                $this->size = $_FILES['size'];
             }
 
-            return $cleanProperties;
         }
 
+        public function saveUserAndImage() {
 
-
-        public function save() {
-
-            if(isset($this->id)) {          // user istnieje - update'ujemy go
-                $this->update();
-            }       // user nie istnieje - tworzymy go
-            else {
-                $this->create();
-            }
-        }
-
-        public function create() {
-
-            global $database;
-
-            $properties = $this->cleanProperties();      // get object properties
-
-            // niżej - implode(array_keys()) - wstawia nazwy atrybutów obiektu (które są takie same jak w bazie danych), oddzielając je przecinkiem - jest to funkcja uniwersalna, która zadziała na różnych obiektach w różnych klasach
-            $sql = "INSERT INTO " . self::$dbTable . "(" .  implode(",", array_keys($properties))   .")" . " VALUES ('" . implode("', '", array_values($properties)) . "')";           // użycie metody z klasy Database do operacji na danych z klasy User
-
-            if($database->query($sql)) {
-
-                $this->id = $database->theInsertId();
-
-                return true;
-            }
-            else {
+            if(!empty($this->errors)) {     // sprawdzenie, czy sa jakies errory
                 return false;
             }
 
-        }
-
-        public function update() {
-
-            global $database;
-
-            $properties = $this->cleanProperties();      // get object properties
-
-            $propertiesPairs = [];
-
-            foreach ($properties as $key => $value) {
-                $propertiesPairs[] = "{$key}='{$value}'";
-            }
-
-            $sql = "UPDATE " . self::$dbTable . " SET " . implode(", ", $propertiesPairs) . " WHERE id = " . $database->escapeString($this->id);
-
-            $database->query($sql);
-
-            if(mysqli_affected_rows($database->connection) == 1) {      // sorawdzamy, czy update zadziałał - czy zmieniono jeden wiersz w tabeli
-                return true;
-            }
-            else {
+            if(empty($this->user_image) || empty($this->tmp_path)) {      // nastepne sprawdzanie
+                $this->errors[] = "The file is not available";
                 return false;
             }
 
-        }
+            $targetPath = SITE_ROOT . DS . 'admin' . DS . $this->uploadDirectory . DS . $this->user_image;       // ścieżka do pliku
 
-        public function delete() {
-
-            global $database;
-
-            $sql = "DELETE FROM " . self::$dbTable . " WHERE id = {$database->escapeString($this->id)} LIMIT 1";
-
-            $database->query($sql);
-
-            if(mysqli_affected_rows($database->connection) == 1) {      // sorawdzamy, czy update zadziałał - czy zmieniono (usunięto) jeden wiersz w tabeli
-                return true;
-            }
-            else {
+            if(file_exists($targetPath)) {                  // plik o takiej nazwie jest już w folderze z plikami
+                $this->errors[] = "The file {$this->user_image} already exists";
                 return false;
             }
+
+            if(move_uploaded_file($this->tmp_path, $targetPath)) {          // wbudowana funkcja php przenosi plik z lokalizacji tymczasowej do właściwej
+                unset($this->tmp_path);         // nie potrzebujemy już tej zmiennej
+                return true;
+            }
+            else {              // jeśli nawet to się nie uda - ostatni error checking
+                    $this->errors[] = "Error! The file directory probably does not have permission.";
+                    return false;
+            }
+
         }
+
 
     }
 
