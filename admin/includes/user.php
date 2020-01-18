@@ -92,6 +92,12 @@
 
         }
 
+        public function ajaxSaveUserImage($userImage, $userId) {
+
+            $this->user_image = $userImage;
+            $this->id = $userId;
+            $this->save();
+        }
 
     }
 

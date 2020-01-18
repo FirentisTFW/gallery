@@ -1,4 +1,5 @@
 <?php include("includes/header.php"); ?>
+<?php include("includes/photo_library_modal.php"); ?>
 <?php
     if(!$session->isSignedIn()) {       // user nie jest zalogowany - wyślij go do innej strony
         redirect("login.php");
@@ -64,7 +65,9 @@
                         </h1>
 
                         <div class="col-md-6">
-                            <img class="img-responsive" src="<?php echo $user->imagePathAndPlaceholder(); ?>" alt="">
+
+                            <a href="#" data-toggle="modal" data-target="#photo-library"><img class="img-responsive" src="<?php echo $user->imagePathAndPlaceholder(); ?>" alt=""></a>
+
                         </div>
 
                         <form class="" method="post" enctype="multipart/form-data">
@@ -98,6 +101,7 @@
 
                                 <div class="form-group">
                                     <input type="submit" name="delete" class="btn btn-danger pull-left" value="Delete">
+                                    <input type="hidden" id="user-id" value="<?php echo $user->id;?>">
                                 </div>
 
                                 <div class="form-group">
