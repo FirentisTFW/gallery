@@ -22,7 +22,7 @@ $(document).ready(function() {      // jQuery - to, co jest w nawiasach wykona s
             type: "POST",
             success: function(data) {           // wykonuje się, jeśli wszystko się uda
                 if(!data.error) {     // sprawdzamy, czy nie ma errorów
-                    location.reload(true);
+                    // location.reload(true);
                     // alert(data);
                 }
             }
